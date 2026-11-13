@@ -352,3 +352,60 @@ Rode uma vez e guarde o endereço: ao compartilhar de novo, o link muda.
 - Não altere os datasets de avaliação - apenas os prompts em prompts/bug_to_user_story_v2.yml
 - Itere, itere, itere - é normal precisar de 3-5 iterações para atingir 0.8 em todas as métricas
 - Documente seu processo - a jornada de otimização é tão importante quanto o resultado final
+
+---
+
+# Resultado do Desafio
+
+## Técnicas Aplicadas (Fase 2)
+
+O prompt otimizado está em `prompts/bug_to_user_story_v2.yml`.
+
+1. **Role Prompting**: o modelo atua como Product Manager sênior, o que dá o tom e o vocabulário de uma user story profissional.
+2. **Few-shot Learning**: três exemplos (simples, médio e complexo) mostram o formato esperado e a profundidade de cada nível. É a técnica que mais aproximou a saída da referência.
+3. **Chain of Thought**: o modelo classifica o relato (SIMPLES, MÉDIO ou COMPLEXO), identifica persona, ação e benefício, e só então escreve. O raciocínio fica interno e não aparece na resposta.
+4. **Skeleton of Thought**: há um esqueleto de saída fixo por complexidade (user story, critérios Dado/Quando/Então, exemplo de cálculo, critérios de acessibilidade, contexto técnico e de segurança). Isso mantém a resposta consistente.
+
+Regras adicionais: não inventar requisitos nem números, não copiar dados dos exemplos e tratar casos de borda (relato vago, logs, SQL).
+
+## Resultados Finais
+
+| Métrica | v1 (ruim) | v2 (otimizado) |
+|---|---|---|
+| Helpfulness | - | 0.88 |
+| Correctness | - | 0.84 |
+| F1-Score | - | 0.81 |
+| Clarity | - | 0.90 |
+| Precision | - | 0.86 |
+| **Média** | - | **0.857** |
+
+Histórico de iterações (modelo de resposta `gpt-4o-mini`, juiz `gpt-4o`):
+
+| Iteração | Mudança | F1 | Resultado |
+|---|---|---|---|
+| 1 | Prompt inicial com role, few-shot e formatos | 0.77 | Reprovado |
+| 2 | Formato MÉDIO mais rico | 0.78 | Reprovado |
+| 3 | Critérios extras inventados | 0.75 | Pior: caiu a precisão |
+| 4 | Regra explícita de classificação | 0.80 | Reprovado (F1 arredondado) |
+| 5 | Regras de persona e benefício | 0.79 | Reprovado |
+| 6 | COMPLEXO só com 3 ou mais problemas | 0.78 | Reprovado |
+| 7 | Exemplo de Cálculo obrigatório, Critérios de Acessibilidade e critérios de dados | **0.81** | **Aprovado** |
+
+Aprendizados: o F1 é avaliado por um LLM e oscila cerca de ±0.02 entre execuções. Conteúdo inventado derruba a precisão. Os exemplos do prompt vazam para a saída, então foram mantidos neutros.
+
+- Dataset público: _cole aqui o link do `share_dataset`_
+- Prompt no Hub: https://smith.langchain.com/prompts/bug_to_user_story_v2
+- Screenshots: _adicione em `screenshots/`_
+
+## Como Executar
+
+```bash
+python -m venv venv && source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env                              # preencha as chaves e USERNAME_LANGSMITH_HUB
+
+python src/pull_prompts.py     # baixa o v1 para prompts/bug_to_user_story_v1.yml
+python src/push_prompts.py     # publica o v2 no LangSmith Hub
+python src/evaluate.py         # avalia e imprime as métricas
+pytest tests/test_prompts.py   # valida a estrutura do prompt
+```
