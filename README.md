@@ -394,8 +394,27 @@ Histórico de iterações (modelo de resposta `gpt-4o-mini`, juiz `gpt-4o`):
 Aprendizados: o F1 é avaliado por um LLM e oscila cerca de ±0.02 entre execuções. Conteúdo inventado derruba a precisão. Os exemplos do prompt vazam para a saída, então foram mantidos neutros.
 
 - Dataset público: _cole aqui o link do `share_dataset`_
-- Prompt no Hub: https://smith.langchain.com/prompts/bug_to_user_story_v2
-- Screenshots: _adicione em `screenshots/`_
+- Prompt no Hub: https://smith.langchain.com/prompts/bug_to_user_story_v2?organizationId=bb0a4863-99f0-4a61-ad6c-53954b0da786
+
+### Evidências (LangSmith)
+
+**Dataset de avaliação (15 exemplos):**
+
+![Dataset](screenshots/dataset.png)
+
+**Experimento aprovado (todas as métricas ≥ 0.8):**
+
+![Avaliação aprovada](screenshots/avaliacao-aprovada.png)
+
+**Evolução dos experimentos (#1 a #7):**
+
+![Evolução dos experimentos](screenshots/evolucao-experimentos.png)
+
+**Traces (simples, simples, complexo):**
+
+![Trace 1](screenshots/trace-1.png)
+![Trace 2](screenshots/trace-2.png)
+![Trace 3](screenshots/trace-3.png)
 
 ## Como Executar
 
